@@ -8,6 +8,7 @@ export const cities: CityConfig[] = [
     unlockYear: 1990,
     unlockFee: 0,
     region: 'asia',
+    climate: 'subtropical',
     market: {
       basePopulation: 5_800_000,
       businessTravel: 85,
@@ -26,6 +27,7 @@ export const cities: CityConfig[] = [
     unlockYear: 1992,
     unlockFee: 1_200_000,
     region: 'china',
+    climate: 'subtropical',
     market: {
       basePopulation: 1_700_000,
       businessTravel: 60,
@@ -44,6 +46,7 @@ export const cities: CityConfig[] = [
     unlockYear: 1992,
     unlockFee: 1_500_000,
     region: 'china',
+    climate: 'subtropical',
     market: {
       basePopulation: 6_300_000,
       businessTravel: 70,
@@ -62,6 +65,7 @@ export const cities: CityConfig[] = [
     unlockYear: 2000,
     unlockFee: 3_000_000,
     region: 'china',
+    climate: 'subtropical',
     market: {
       basePopulation: 13_500_000,
       businessTravel: 88,
@@ -80,6 +84,7 @@ export const cities: CityConfig[] = [
     unlockYear: 2000,
     unlockFee: 3_000_000,
     region: 'china',
+    climate: 'temperate',
     market: {
       basePopulation: 11_000_000,
       businessTravel: 90,
@@ -98,6 +103,7 @@ export const cities: CityConfig[] = [
     unlockYear: 2003,
     unlockFee: 4_000_000,
     region: 'sea',
+    climate: 'tropical',
     market: {
       basePopulation: 3_000_000,
       businessTravel: 92,
@@ -116,6 +122,7 @@ export const cities: CityConfig[] = [
     unlockYear: 2003,
     unlockFee: 1_800_000,
     region: 'sea',
+    climate: 'tropical',
     market: {
       basePopulation: 1_800_000,
       businessTravel: 65,
@@ -134,6 +141,7 @@ export const cities: CityConfig[] = [
     unlockYear: 2005,
     unlockFee: 5_000_000,
     region: 'japan',
+    climate: 'subtropical',
     market: {
       basePopulation: 14_000_000,
       businessTravel: 95,
@@ -152,6 +160,7 @@ export const cities: CityConfig[] = [
     unlockYear: 2005,
     unlockFee: 3_500_000,
     region: 'korea',
+    climate: 'temperate',
     market: {
       basePopulation: 9_700_000,
       businessTravel: 88,
@@ -170,6 +179,7 @@ export const cities: CityConfig[] = [
     unlockYear: 2010,
     unlockFee: 8_000_000,
     region: 'usa',
+    climate: 'temperate',
     market: {
       basePopulation: 8_300_000,
       businessTravel: 98,
@@ -188,6 +198,7 @@ export const cities: CityConfig[] = [
     unlockYear: 2010,
     unlockFee: 6_000_000,
     region: 'usa',
+    climate: 'subtropical',
     market: {
       basePopulation: 4_000_000,
       businessTravel: 75,
@@ -206,6 +217,7 @@ export const cities: CityConfig[] = [
     unlockYear: 2010,
     unlockFee: 7_000_000,
     region: 'usa',
+    climate: 'subtropical',
     market: {
       basePopulation: 900_000,
       businessTravel: 96,
@@ -224,6 +236,7 @@ export const cities: CityConfig[] = [
     unlockYear: 2012,
     unlockFee: 7_500_000,
     region: 'europe',
+    climate: 'temperate',
     market: {
       basePopulation: 7_200_000,
       businessTravel: 96,
@@ -242,6 +255,7 @@ export const cities: CityConfig[] = [
     unlockYear: 2012,
     unlockFee: 7_000_000,
     region: 'europe',
+    climate: 'temperate',
     market: {
       basePopulation: 2_200_000,
       businessTravel: 82,
@@ -260,6 +274,7 @@ export const cities: CityConfig[] = [
     unlockYear: 2014,
     unlockFee: 5_500_000,
     region: 'middle-east',
+    climate: 'desert',
     market: {
       basePopulation: 2_100_000,
       businessTravel: 88,
@@ -278,6 +293,7 @@ export const cities: CityConfig[] = [
     unlockYear: 2014,
     unlockFee: 2_000_000,
     region: 'sea',
+    climate: 'tropical',
     market: {
       basePopulation: 6_300_000,
       businessTravel: 65,
@@ -296,6 +312,7 @@ export const cities: CityConfig[] = [
     unlockYear: 2015,
     unlockFee: 4_500_000,
     region: 'oceania',
+    climate: 'subtropical',
     market: {
       basePopulation: 4_300_000,
       businessTravel: 78,
@@ -314,6 +331,7 @@ export const cities: CityConfig[] = [
     unlockYear: 2016,
     unlockFee: 2_500_000,
     region: 'south-asia',
+    climate: 'tropical',
     market: {
       basePopulation: 12_400_000,
       businessTravel: 86,
@@ -332,6 +350,7 @@ export const cities: CityConfig[] = [
     unlockYear: 2016,
     unlockFee: 1_800_000,
     region: 'sea',
+    climate: 'tropical',
     market: {
       basePopulation: 9_600_000,
       businessTravel: 76,
@@ -350,6 +369,7 @@ export const cities: CityConfig[] = [
     unlockYear: 2018,
     unlockFee: 2_200_000,
     region: 'asia',
+    climate: 'subtropical',
     market: {
       basePopulation: 2_600_000,
       businessTravel: 80,

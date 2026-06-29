@@ -36,36 +36,44 @@ export function defaultOpeningConfig(
 ): { roomInventory: HotelRoomInventory; facilities: HotelFacilityList } {
   const roomInventory = emptyRoomInventory()
   const facilities: HotelFacilityList = ['lobby']
+  const config = STAR_CONFIG[stars]
 
   if (personality === 'price_warrior') {
-    roomInventory.dorm6 = 4
-    roomInventory.king = 3
+    // Budget-focused: lots of dorm+king, fewer premium
+    roomInventory.dorm6 = Math.floor(config.rooms * 0.25)
+    roomInventory.king = Math.floor(config.rooms * 0.35)
+    roomInventory.twin = Math.floor(config.rooms * 0.1)
     facilities.push('laundry', 'restaurant')
     return { roomInventory, facilities }
   }
 
   switch (stars) {
     case 3:
-      roomInventory.king = 5
+      roomInventory.king = Math.floor(config.rooms * 0.55)
+      roomInventory.twin = Math.floor(config.rooms * 0.2)
+      roomInventory.dorm6 = Math.floor(config.rooms * 0.08)
       facilities.push('laundry', 'restaurant')
       break
     case 4:
-      roomInventory.king = 4
-      roomInventory.twin = 2
-      roomInventory.suite = 1
+      roomInventory.king = Math.floor(config.rooms * 0.35)
+      roomInventory.twin = Math.floor(config.rooms * 0.25)
+      roomInventory.suite = Math.floor(config.rooms * 0.15)
+      roomInventory.dorm6 = Math.floor(config.rooms * 0.05)
       facilities.push('restaurant', 'laundry', 'gym')
       break
     case 5:
-      roomInventory.king = 3
-      roomInventory.suite = 2
-      roomInventory.deluxe_suite = 1
+      roomInventory.king = Math.floor(config.rooms * 0.2)
+      roomInventory.suite = Math.floor(config.rooms * 0.25)
+      roomInventory.deluxe_suite = Math.floor(config.rooms * 0.15)
+      roomInventory.twin = Math.floor(config.rooms * 0.1)
+      roomInventory.executive_suite = Math.floor(config.rooms * 0.05)
       facilities.push('restaurant', 'pool', 'gym')
       break
   }
 
   if (personality === 'premium' && stars === 5) {
-    roomInventory.luxury_resort_suite = 1
-    roomInventory.king = Math.max(0, roomInventory.king - 1)
+    roomInventory.luxury_resort_suite = Math.floor(config.rooms * 0.05)
+    roomInventory.king = Math.max(0, roomInventory.king - 3)
     if (!facilities.includes('spa')) facilities.push('spa')
   }
 
@@ -117,7 +125,7 @@ export function migrateHotelToSpaceModel(hotel: LegacyHotel): Hotel {
   const { rooms: _rooms, ...rest } = hotel
   return {
     ...rest,
-    spaceTotal: Math.max(INITIAL_SPACE_TOTAL, Math.ceil(spaceUsed)),
+    spaceTotal: Math.max(STAR_CONFIG[hotel.stars].spaceTotal, Math.ceil(spaceUsed)),
     roomInventory,
     facilities,
     staff: defaultStaffForRooms(totalRooms),
@@ -130,10 +138,10 @@ export function migrateHotelToSpaceModel(hotel: LegacyHotel): Hotel {
 
 export function calcStaffDailyCost(staff: HotelStaff): number {
   return (
-    staff.frontDesk * 120 +
-    staff.housekeeping * 80 +
-    staff.foodService * 100 +
-    staff.engineering * 110
+    staff.frontDesk * 90 +
+    staff.housekeeping * 60 +
+    staff.foodService * 75 +
+    staff.engineering * 85
   )
 }
 

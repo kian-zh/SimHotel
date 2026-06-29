@@ -9,7 +9,7 @@ import {
   validateOpeningConfig,
 } from './space'
 import type { Hotel } from '../types'
-import { INITIAL_SPACE_TOTAL } from '../types'
+import { STAR_CONFIG } from '../types'
 
 function mockHotel(overrides: Partial<Hotel> = {}): Hotel {
   const opening = defaultOpeningConfig(3)
@@ -21,7 +21,7 @@ function mockHotel(overrides: Partial<Hotel> = {}): Hotel {
     coordinates: [114.17, 22.32],
     gridCellId: '0,0',
     stars: 3,
-    spaceTotal: INITIAL_SPACE_TOTAL,
+    spaceTotal: STAR_CONFIG[3].spaceTotal,
     roomInventory: opening.roomInventory,
     facilities: opening.facilities,
     staff: { frontDesk: 2, housekeeping: 2, foodService: 1, engineering: 1 },

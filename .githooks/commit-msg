@@ -1,0 +1,45 @@
+#!/bin/sh
+#
+# Git commit-msg hook — validates Conventional Commits format
+#
+# Allowed format: type(scope): description
+#   type:  feat, fix, docs, style, refactor, perf, test, chore, ci, build, revert
+#   scope: optional, alphanumeric + hyphens
+#
+# Examples:
+#   feat(hotel): add room upgrade system
+#   fix: resolve null pointer on map load
+#   chore(deps): bump framer-motion to v13
+
+COMMIT_MSG_FILE="$1"
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+# Read the first non-comment, non-empty line as the subject
+SUBJECT=$(grep -v '^#' "$COMMIT_MSG_FILE" | sed '/^$/d' | head -n1)
+
+# Skip merge commits
+if echo "$SUBJECT" | grep -qE '^Merge( |$)'; then
+    exit 0
+fi
+
+# Pattern: type(optional-scope): description
+# type must be one of the allowed list, description must not be empty
+PATTERN='^(feat|fix|docs|style|refactor|perf|test|chore|ci|build|revert)(\([a-zA-Z0-9_-]+\))?: .+'
+
+if ! echo "$SUBJECT" | grep -qE "$PATTERN"; then
+    echo "${RED}✖ Invalid commit message format.${NC}"
+    echo ""
+    echo "Expected: ${GREEN}type(scope): description${NC}"
+    echo ""
+    echo "Valid types: feat, fix, docs, style, refactor, perf, test, chore, ci, build, revert"
+    echo ""
+    echo "Examples:"
+    echo "  feat(hotel): add room upgrade system"
+    echo "  fix: resolve null pointer on map load"
+    echo "  chore(deps): bump dependencies"
+    echo ""
+    echo "Your message: \"${SUBJECT}\""
+    exit 1
+fi

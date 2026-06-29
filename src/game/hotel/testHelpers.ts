@@ -1,6 +1,6 @@
 import type { Hotel, HotelStar } from '../types'
 import { defaultOpeningConfig, defaultStaffForRooms } from './defaults'
-import { INITIAL_SPACE_TOTAL } from '../types'
+import { STAR_CONFIG } from '../types'
 
 export function createTestHotel(overrides: Partial<Hotel> = {}): Hotel {
   const stars = (overrides.stars ?? 4) as HotelStar
@@ -17,7 +17,7 @@ export function createTestHotel(overrides: Partial<Hotel> = {}): Hotel {
     coordinates: [114.1694, 22.3193],
     gridCellId: '0,0',
     stars,
-    spaceTotal: overrides.spaceTotal ?? INITIAL_SPACE_TOTAL,
+    spaceTotal: overrides.spaceTotal ?? STAR_CONFIG[stars].spaceTotal,
     roomInventory,
     facilities,
     staff: overrides.staff ?? defaultStaffForRooms(totalRooms),

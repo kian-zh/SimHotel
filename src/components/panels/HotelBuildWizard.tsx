@@ -10,7 +10,7 @@ import {
   validateBuildConfig,
 } from '../../game/hotel/space'
 import type { FacilityId, HotelFacilityList, HotelRoomInventory, HotelStar, RoomTypeId } from '../../game/types'
-import { FACILITIES, INITIAL_SPACE_TOTAL, ROOM_TYPES, STAR_CONFIG } from '../../game/types'
+import { FACILITIES, ROOM_TYPES, STAR_CONFIG } from '../../game/types'
 import { useGameStore } from '../../stores/gameStore'
 import { Button } from '../ui/Button'
 
@@ -50,7 +50,7 @@ export function HotelBuildWizard({
   const unlockedTechs = useGameStore((s) => s.unlockedTechs)
 
   const selectedCity = cityMap[cityId]
-  const spaceTotal = INITIAL_SPACE_TOTAL
+  const spaceTotal = STAR_CONFIG[stars].spaceTotal
   const spaceUsed = calcSpaceUsed(roomInventory, facilities)
   const validation = useMemo(
     () => validateBuildConfig(roomInventory, facilities, spaceTotal, unlockedTechs),

@@ -6,7 +6,7 @@ import { Button } from '../ui/Button'
 import { Card } from '../ui/Card'
 import { SlidePanel } from '../ui/SlidePanel'
 
-const RIGHT_PANEL_POS = 'inset-x-0 top-[4.5rem] bottom-0 w-full sm:inset-x-auto sm:right-0 sm:left-auto sm:top-14 sm:bottom-2 sm:w-64'
+const RIGHT_PANEL_POS = 'inset-x-0 top-20 bottom-0 w-full sm:inset-x-auto sm:right-0 sm:left-auto sm:top-16 sm:bottom-2 sm:w-64'
 import type { MarketModifiers } from '../../game/types'
 
 const CATEGORY_COLORS: Record<string, string> = {

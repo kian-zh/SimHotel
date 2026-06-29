@@ -13,7 +13,7 @@ import { SlidePanel } from '../ui/SlidePanel'
 import { createDefaultBuildConfig, HotelBuildWizard } from './HotelBuildWizard'
 
 const RIGHT_PANEL_POS =
-  'inset-x-0 top-[4.5rem] bottom-0 w-full sm:inset-x-auto sm:right-0 sm:left-auto sm:top-14 sm:bottom-2 sm:w-72'
+  'inset-x-0 top-20 bottom-0 w-full sm:inset-x-auto sm:right-0 sm:left-auto sm:top-16 sm:bottom-2 sm:w-72'
 const PANEL_CARD = 'h-full overflow-y-auto p-2.5 shadow-xl sm:p-3'
 
 type BuildStep = 'site' | 'space'

@@ -21,8 +21,9 @@ import { processHotelSales } from '../hotel/acquisition'
 import { processHotelDailyMaintenance } from '../hotel/operations'
 import { advanceResearchDay } from '../tech/tech'
 import { processDailyAdBilling } from '../marketing/ads'
+import { generateAllCityWeather } from './weather'
 import type { CompetitorPersonality, GameState, Hotel, HotelFacilityList, HotelRoomInventory, HotelStar } from '../types'
-import { INITIAL_SPACE_TOTAL, STAR_CONFIG, STRATEGY_POLICIES } from '../types'
+import { STAR_CONFIG, STRATEGY_POLICIES } from '../types'
 
 export function simulateDay(state: GameState): Partial<GameState> & {
   pendingMajorEvent?: GameState['activeEvents'][0] | null
@@ -46,6 +47,14 @@ export function simulateDay(state: GameState): Partial<GameState> & {
   const gridPoints = rebuildGrid(state.worldMetrics, state.worldSeed, state.date.year, state.activeEvents)
   const adContext = { brandAd: state.brandAd, hotelAds: state.hotelAds ?? [] }
 
+  // Collect city climates and generate weather
+  const cityClimates: Record<string, import('../types').ClimateZone> = {}
+  for (const cityId of state.unlockedCities) {
+    const city = getCityById(cityId)
+    cityClimates[cityId] = city.climate
+  }
+  const cityWeathers = generateAllCityWeather(state.unlockedCities, cityClimates, state.date)
+
   for (const cityId of state.unlockedCities) {
     const city = getCityById(cityId)
     const demand = calculateDailyDemand(
@@ -56,6 +65,7 @@ export function simulateDay(state: GameState): Partial<GameState> & {
       worldMetrics[cityId],
       gridPoints,
       adContext,
+      cityWeathers[cityId],
     )
     const allocation = allocateMarketShare(
       cityId,
@@ -199,6 +209,7 @@ export function simulateDay(state: GameState): Partial<GameState> & {
     pendingMajorEvent: eventResult.pendingMajorEvent,
     hotelAds: adBilling.hotelAds,
     brandAd: adBilling.brandAd,
+    cityWeathers,
   }
 }
 
@@ -252,7 +263,7 @@ export function createHotelFromConfig(
     coordinates: params.coordinates,
     gridCellId: params.gridCellId,
     stars: params.stars,
-    spaceTotal: params.spaceTotal ?? Math.max(INITIAL_SPACE_TOTAL, Math.ceil(spaceUsed)),
+    spaceTotal: params.spaceTotal ?? Math.max(STAR_CONFIG[params.stars].spaceTotal, Math.ceil(spaceUsed)),
     roomInventory,
     facilities,
     staff: defaultStaffForRooms(totalRooms),

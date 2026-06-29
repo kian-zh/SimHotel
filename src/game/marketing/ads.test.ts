@@ -238,11 +238,12 @@ describe('demand effects', () => {
       ],
       brandAd: { adType: 'ota', dailyBudget: 2_500, daysRemaining: 2 },
     })
-    const cashBefore = state.cash
     const result = simulateDay(state)
     expect(result.hotelAds?.[0]?.daysRemaining).toBe(2)
     expect(result.brandAd?.daysRemaining).toBe(1)
-    expect(result.cash).toBeLessThan(cashBefore)
+    // Ad spend should be reflected in daily expenses
+    const lastEntry = result.financeHistory?.[result.financeHistory.length - 1]
+    expect(lastEntry?.dailyExpense).toBeGreaterThan(1_200 + 2_500)
   })
 })
 

@@ -34,7 +34,7 @@ import type {
   TechId,
   AdTypeId,
 } from '../game/types'
-import { FACILITIES, INITIAL_SPACE_TOTAL, INITIAL_CASH, INITIAL_DATE, STAR_CONFIG } from '../game/types'
+import { FACILITIES, INITIAL_CASH, INITIAL_DATE, STAR_CONFIG } from '../game/types'
 import { getDaysUntilNextMonth } from '../game/engine/date'
 import { isCellOccupied, pickAvailableHexCell, snapToHexCell } from '../data/grid/hexGrid'
 import { getCityBounds, isWithinBounds } from '../data/cities/bounds'
@@ -89,6 +89,7 @@ function createInitialState(): GameState {
     researchingTech: null,
     hotelAds: [],
     brandAd: null,
+    cityWeathers: {},
   }
 }
 
@@ -261,7 +262,7 @@ export const useGameStore = create<GameStore>()(
       const opening = defaultOpeningConfig(params.stars)
       const roomInventory = params.roomInventory ?? opening.roomInventory
       const facilities = params.facilities ?? opening.facilities
-      const spaceTotal = params.spaceTotal ?? INITIAL_SPACE_TOTAL
+      const spaceTotal = params.spaceTotal ?? STAR_CONFIG[params.stars].spaceTotal
 
       const buildCheck = validateBuildConfig(roomInventory, facilities, spaceTotal, state.unlockedTechs)
       if (!buildCheck.ok) return false
@@ -543,6 +544,7 @@ export const useGameStore = create<GameStore>()(
         if (s.researchingTech === undefined) s.researchingTech = null
         if (!s.hotelAds) s.hotelAds = []
         if (s.brandAd === undefined) s.brandAd = null
+        if (!s.cityWeathers) s.cityWeathers = {}
         migrateAdCampaignFields(s)
         if (s.dailyCashDelta == null) s.dailyCashDelta = 0
         if (!s.mapViewMode) s.mapViewMode = s.showStats ? 'overview' : 'city'

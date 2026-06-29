@@ -1,5 +1,6 @@
 import { cityMap } from '../../data/cities'
-import type { ActiveEvent, AdCampaign, BrandAdCampaign, CityConfig, CityMetrics, GameDate, GridPoint, Hotel, MarketModifiers } from '../types'
+import type { ActiveEvent, AdCampaign, BrandAdCampaign, CityConfig, CityMetrics, GameDate, GridPoint, Hotel, MarketModifiers, WeatherType } from '../types'
+import { WEATHER_INFO } from '../types'
 import { getBrandDemandMultiplier, getHotelAdAttractivenessMultiplier } from '../marketing/ads'
 import { clamp, getSeasonMultiplier } from '../engine/date'
 import { calcStaffDailyCost } from '../hotel/defaults'
@@ -42,6 +43,7 @@ export function calculateDailyDemand(
     brandAd: BrandAdCampaign | null
     hotelAds: AdCampaign[]
   },
+  weatherType?: WeatherType,
 ): number {
   const { market } = city
   const eventMods = getEventModifiersForCity(city.id, activeEvents)
@@ -51,7 +53,27 @@ export function calculateDailyDemand(
   const businessFactor = ((market.businessTravel + wm.economy) / 200) * (1 + (eventMods.businessTravel ?? 0))
   const season = getSeasonMultiplier(date.month, market.seasonality.peak, market.seasonality.multiplier)
   const popScale = 1 + (wm.population - 50) / 200
-  let demandBase = market.basePopulation * 0.0008 * popScale * (tourismFactor * 0.55 + businessFactor * 0.45) * season
+
+  /** Weekday/weekend oscillation */
+  const dayOfWeek = getDayOfWeek(date)
+  const isWeekend = dayOfWeek === 0 || dayOfWeek === 6
+  const weekdayFactor = isWeekend ? 1.12 : 0.92
+
+  /** Daily random fluctuation (±8%) using date-based seed for consistency */
+  const dailyNoise = 0.92 + pseudoRandom(date) * 0.16
+
+  /** Weather effect */
+  const weatherMod = weatherType ? WEATHER_INFO[weatherType]?.demandModifier ?? 1 : 1
+
+  let demandBase =
+    market.basePopulation *
+    0.000065 *
+    popScale *
+    (tourismFactor * 0.55 + businessFactor * 0.45) *
+    season *
+    weekdayFactor *
+    dailyNoise *
+    weatherMod
 
   if (gridPoints && gridPoints.length > 0) {
     const cityHotels = hotels.filter((h) => h.cityId === city.id)
@@ -82,11 +104,25 @@ export function calculateDailyDemand(
 
   if (cityHotels.length > 0) {
     const avgFacilityBoost =
-      cityHotels.reduce((sum, h) => sum + getFacilityDemandMultiplier(h.facilities), 0) / cityHotels.length
+      cityHotels.reduce((sum, h) => sum + getFacilityDemandMultiplier(h.facilities), 0) /
+      cityHotels.length
     demandBase *= avgFacilityBoost
   }
 
   return Math.round(demandBase * priceEffect * eventDemand)
+}
+
+/** Returns 0=Sunday ... 6=Saturday */
+export function getDayOfWeek(date: GameDate): number {
+  const d = new Date(date.year, date.month - 1, date.day)
+  return d.getDay()
+}
+
+/** Deterministic pseudo-random value in [0,1) from game date */
+export function pseudoRandom(date: GameDate): number {
+  const seed = date.year * 10000 + date.month * 100 + date.day
+  const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453
+  return x - Math.floor(x)
 }
 
 export function calculateAttractiveness(
@@ -165,10 +201,10 @@ export function allocateMarketShare(
 
 export function getOperatingCost(hotel: Hotel, city: CityConfig): number {
   const totalRooms = calcTotalRooms(hotel.roomInventory)
-  const base = totalRooms * (hotel.stars * 8 + 40)
+  const base = totalRooms * (hotel.stars * 8 + 20)
   const regulatory = (city.market.regulatoryCost / 100) * base * 0.3
-  const qualityStaff = hotel.quality * totalRooms * 0.15
-  const facilityOverhead = hotel.facilities.length * 180
+  const qualityStaff = hotel.quality * totalRooms * 0.12
+  const facilityOverhead = hotel.facilities.length * 150
   const staffCost = calcStaffDailyCost(hotel.staff)
   const costReduction = getFacilityCostReduction(hotel.facilities)
   const gross = base + regulatory + qualityStaff + facilityOverhead + staffCost

@@ -3,12 +3,14 @@ import { cityMap } from '../../data/cities'
 import { getCityProfile } from '../../data/cities/dossiers'
 import { calcTotalRooms } from '../../game/hotel/space'
 import { useGameStore } from '../../stores/gameStore'
+import { WEATHER_INFO } from '../../game/types'
+import type { WeatherType } from '../../game/types'
 import { Button } from '../ui/Button'
 import { Card } from '../ui/Card'
 import { SlidePanel } from '../ui/SlidePanel'
 import { CityPortrait } from '../ui/CityPortrait'
 
-const LEFT_PANEL_POS = 'inset-x-0 top-[4.5rem] bottom-0 w-full sm:inset-x-auto sm:left-0 sm:right-auto sm:top-14 sm:bottom-2 sm:w-64'
+const LEFT_PANEL_POS = 'inset-x-0 top-20 bottom-0 w-full sm:inset-x-auto sm:left-0 sm:right-auto sm:top-16 sm:bottom-2 sm:w-64'
 const PANEL_CARD = 'h-full overflow-y-auto p-2.5 shadow-xl sm:p-3'
 
 export function CityPanel() {
@@ -22,6 +24,7 @@ export function CityPanel() {
   const unlockedCities = useGameStore((s) => s.unlockedCities)
   const setShowCityPanel = useGameStore((s) => s.setShowCityPanel)
   const setShowBuildPanel = useGameStore((s) => s.setShowBuildPanel)
+  const cityWeathers = useGameStore((s) => s.cityWeathers)
 
   if (!selectedCityId) return null
   const city = cityMap[selectedCityId]
@@ -32,6 +35,8 @@ export function CityPanel() {
   const wm = worldMetrics[selectedCityId]
   const cityHotels = hotels.filter((h) => h.cityId === selectedCityId)
   const dossier = getCityProfile(selectedCityId)
+  const weatherType: WeatherType | undefined = cityWeathers[selectedCityId]
+  const weatherInfo = weatherType ? WEATHER_INFO[weatherType] : null
 
   return (
     <SlidePanel open={showCityPanel} side="left" className={LEFT_PANEL_POS}>
@@ -44,6 +49,21 @@ export function CityPanel() {
         </div>
 
         <CityPortrait cityId={selectedCityId} lang={lang} className="mb-2 h-28 w-full" />
+
+        {weatherInfo && (
+          <div className="mb-2 flex items-center gap-1.5 rounded-md bg-card-dark px-2 py-1.5 text-xs">
+            <span className="text-lg">{weatherInfo.icon}</span>
+            <div>
+              <span className="font-medium">{weatherInfo.name[lang]}</span>
+              {weatherInfo.demandModifier !== 1 && (
+                <span className={`ml-1 text-[10px] ${weatherInfo.demandModifier > 1 ? 'text-teal' : 'text-accent'}`}>
+                  {weatherInfo.demandModifier > 1 ? '+' : ''}
+                  {Math.round((weatherInfo.demandModifier - 1) * 100)}% {t('demand')}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
 
         <div className="mb-2 inline-block rounded-full bg-teal/20 px-2 py-0.5 text-[10px] text-teal-dark">
           {unlocked ? t('unlocked') : `${t('unlockFee')}: $${city.unlockFee.toLocaleString()}`}

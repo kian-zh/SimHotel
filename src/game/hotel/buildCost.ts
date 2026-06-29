@@ -6,18 +6,9 @@ import type {
   RoomTypeId,
   StrategyPolicyId,
 } from '../types'
-import { FACILITIES, STAR_CONFIG, STRATEGY_POLICIES } from '../types'
+import { FACILITIES, ROOM_FITOUT_COST, STAR_CONFIG, STRATEGY_POLICIES } from '../types'
 
-const FACILITY_BUILD_RATE = 62_000
-const ROOM_FITOUT_COST: Record<RoomTypeId, number> = {
-  king: 95_000,
-  twin: 105_000,
-  dorm6: 38_000,
-  suite: 185_000,
-  deluxe_suite: 260_000,
-  executive_suite: 320_000,
-  luxury_resort_suite: 420_000,
-}
+const FACILITY_BUILD_RATE = 45_000
 
 export interface BuildCostBreakdown {
   landFee: number

@@ -78,6 +78,16 @@ export type AdTypeId = 'metro' | 'airport' | 'ota' | 'finance_media' | 'social' 
 export type CompetitorPersonality = 'aggressive' | 'price_warrior' | 'premium' | 'regional'
 export type StrategyPolicyId = 'balanced' | 'expansion' | 'luxury' | 'efficiency' | 'defensive'
 export type CreditRating = 'AAA' | 'A' | 'BBB' | 'B' | 'Distressed'
+export type WeatherType = 'sunny' | 'cloudy' | 'rainy' | 'stormy' | 'snowy'
+
+export interface WeatherInfo {
+  type: WeatherType
+  name: LocalizedName
+  /** Multiplier on daily demand (1.0 = no effect) */
+  demandModifier: number
+  /** Emoji icon for UI display */
+  icon: string
+}
 
 export interface Seasonality {
   peak: number[]
@@ -106,6 +116,7 @@ export interface CityConfig {
   unlockFee: number
   region: string
   market: MarketParams
+  climate: ClimateZone
 }
 
 export interface RoomTypeConfig {
@@ -312,6 +323,7 @@ export interface GameState {
   researchingTech: ResearchingTech | null
   hotelAds: AdCampaign[]
   brandAd: BrandAdCampaign | null
+  cityWeathers: Record<string, WeatherType>
 }
 
 export interface BuildHotelParams {
@@ -325,13 +337,17 @@ export interface BuildHotelParams {
   spaceTotal?: number
 }
 
-export const STAR_CONFIG: Record<HotelStar, { rooms: number; buildCost: number; baseQuality: number; basePrice: number }> = {
-  3: { rooms: 80, buildCost: 2_500_000, baseQuality: 55, basePrice: 120 },
-  4: { rooms: 120, buildCost: 5_000_000, baseQuality: 72, basePrice: 220 },
-  5: { rooms: 180, buildCost: 12_000_000, baseQuality: 88, basePrice: 450 },
+export const STAR_CONFIG: Record<
+  HotelStar,
+  { rooms: number; buildCost: number; baseQuality: number; basePrice: number; spaceTotal: number }
+> = {
+  3: { rooms: 60, buildCost: 3_500_000, baseQuality: 55, basePrice: 120, spaceTotal: 100 },
+  4: { rooms: 120, buildCost: 7_500_000, baseQuality: 72, basePrice: 220, spaceTotal: 200 },
+  5: { rooms: 250, buildCost: 18_000_000, baseQuality: 88, basePrice: 450, spaceTotal: 400 },
 }
 
-export const INITIAL_SPACE_TOTAL = 20
+/** @deprecated Use STAR_CONFIG[stars].spaceTotal instead */
+export const INITIAL_SPACE_TOTAL = 100
 
 export const MIN_OPENING_REQUIREMENTS = {
   requiredFacilities: ['lobby'] as FacilityId[],
@@ -364,6 +380,17 @@ export const ROOM_TYPES: Record<RoomTypeId, RoomTypeConfig> = {
     targetSegment: 'luxury',
     requiredTech: 'luxury_resort_rooms',
   },
+}
+
+/** Per-room fitout cost (scaled for 30-500 room hotels) */
+export const ROOM_FITOUT_COST: Record<RoomTypeId, number> = {
+  king: 28_000,
+  twin: 30_000,
+  dorm6: 12_000,
+  suite: 55_000,
+  deluxe_suite: 78_000,
+  executive_suite: 98_000,
+  luxury_resort_suite: 135_000,
 }
 
 export const FACILITIES: Record<FacilityId, FacilityConfig> = {
@@ -494,7 +521,63 @@ export const TECH_TREE: Record<TechId, TechConfig> = {
 }
 
 export const INITIAL_DATE: GameDate = { year: 1990, month: 1, day: 1 }
-export const INITIAL_CASH = 8_000_000
+export const INITIAL_CASH = 10_000_000
+
+/** Weather demand modifier for each weather type */
+export const WEATHER_INFO: Record<WeatherType, WeatherInfo> = {
+  sunny: { type: 'sunny', name: { zh: '晴天', en: 'Sunny' }, demandModifier: 1.05, icon: '☀️' },
+  cloudy: { type: 'cloudy', name: { zh: '多云', en: 'Cloudy' }, demandModifier: 1.0, icon: '⛅' },
+  rainy: { type: 'rainy', name: { zh: '雨天', en: 'Rainy' }, demandModifier: 0.93, icon: '🌧️' },
+  stormy: { type: 'stormy', name: { zh: '暴风雨', en: 'Stormy' }, demandModifier: 0.82, icon: '⛈️' },
+  snowy: { type: 'snowy', name: { zh: '下雪', en: 'Snowy' }, demandModifier: 0.88, icon: '❄️' },
+}
+
+/** Climate zone determines weather probability distribution */
+export type ClimateZone = 'tropical' | 'subtropical' | 'temperate' | 'continental' | 'desert'
+
+/** Monthly weather probabilities by climate zone (sunny, cloudy, rainy, stormy, snowy) */
+export const CLIMATE_WEATHER: Record<ClimateZone, Record<number, number[]>> = {
+  tropical: {
+    1: [0.35, 0.30, 0.25, 0.10, 0],  2: [0.35, 0.30, 0.25, 0.10, 0],
+    3: [0.40, 0.28, 0.22, 0.10, 0],  4: [0.45, 0.25, 0.20, 0.10, 0],
+    5: [0.40, 0.25, 0.25, 0.10, 0],  6: [0.35, 0.25, 0.30, 0.10, 0],
+    7: [0.35, 0.25, 0.28, 0.12, 0],  8: [0.35, 0.25, 0.28, 0.12, 0],
+    9: [0.35, 0.28, 0.27, 0.10, 0], 10: [0.40, 0.28, 0.22, 0.10, 0],
+    11: [0.38, 0.30, 0.22, 0.10, 0], 12: [0.35, 0.32, 0.23, 0.10, 0],
+  },
+  subtropical: {
+    1: [0.40, 0.30, 0.22, 0.07, 0.01],  2: [0.35, 0.32, 0.25, 0.07, 0.01],
+    3: [0.38, 0.30, 0.25, 0.06, 0.01],  4: [0.42, 0.28, 0.23, 0.06, 0.01],
+    5: [0.45, 0.25, 0.23, 0.06, 0.01],  6: [0.40, 0.22, 0.30, 0.07, 0.01],
+    7: [0.48, 0.20, 0.24, 0.07, 0.01],  8: [0.45, 0.22, 0.25, 0.07, 0.01],
+    9: [0.50, 0.22, 0.21, 0.06, 0.01], 10: [0.55, 0.22, 0.17, 0.05, 0.01],
+    11: [0.48, 0.28, 0.18, 0.05, 0.01], 12: [0.42, 0.30, 0.22, 0.05, 0.01],
+  },
+  temperate: {
+    1: [0.22, 0.30, 0.28, 0.10, 0.10],  2: [0.25, 0.28, 0.27, 0.10, 0.10],
+    3: [0.30, 0.28, 0.25, 0.10, 0.07],  4: [0.35, 0.28, 0.22, 0.10, 0.05],
+    5: [0.40, 0.28, 0.22, 0.07, 0.03],  6: [0.42, 0.26, 0.22, 0.08, 0.02],
+    7: [0.45, 0.24, 0.22, 0.07, 0.02],  8: [0.45, 0.24, 0.22, 0.07, 0.02],
+    9: [0.40, 0.28, 0.22, 0.08, 0.02], 10: [0.32, 0.30, 0.25, 0.10, 0.03],
+    11: [0.25, 0.32, 0.25, 0.10, 0.08], 12: [0.20, 0.32, 0.28, 0.10, 0.10],
+  },
+  continental: {
+    1: [0.20, 0.25, 0.18, 0.12, 0.25],  2: [0.22, 0.28, 0.18, 0.10, 0.22],
+    3: [0.30, 0.28, 0.20, 0.10, 0.12],  4: [0.38, 0.28, 0.20, 0.08, 0.06],
+    5: [0.42, 0.28, 0.20, 0.07, 0.03],  6: [0.45, 0.26, 0.20, 0.07, 0.02],
+    7: [0.48, 0.24, 0.20, 0.06, 0.02],  8: [0.48, 0.24, 0.20, 0.06, 0.02],
+    9: [0.42, 0.28, 0.20, 0.07, 0.03], 10: [0.32, 0.30, 0.22, 0.10, 0.06],
+    11: [0.22, 0.30, 0.22, 0.12, 0.14], 12: [0.18, 0.28, 0.20, 0.12, 0.22],
+  },
+  desert: {
+    1: [0.65, 0.20, 0.10, 0.05, 0],  2: [0.68, 0.18, 0.10, 0.04, 0],
+    3: [0.70, 0.15, 0.10, 0.05, 0],  4: [0.72, 0.14, 0.10, 0.04, 0],
+    5: [0.75, 0.12, 0.09, 0.04, 0],  6: [0.78, 0.10, 0.08, 0.04, 0],
+    7: [0.76, 0.12, 0.08, 0.04, 0],  8: [0.75, 0.12, 0.09, 0.04, 0],
+    9: [0.72, 0.15, 0.09, 0.04, 0], 10: [0.68, 0.18, 0.10, 0.04, 0],
+    11: [0.65, 0.20, 0.10, 0.05, 0], 12: [0.62, 0.22, 0.11, 0.05, 0],
+  },
+}
 
 export interface StrategyPolicyConfig {
   id: StrategyPolicyId
