@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+@theme {
+  --color-map-bg: #1a1f2e;
+  --color-card: #f8f9fb;
+  --color-card-dark: #eef1f5;
+  --color-accent: #ff6b4a;
+  --color-accent-hover: #ff5533;
+  --color-teal: #2dd4bf;
+  --color-teal-dark: #14b8a6;
+  --color-muted: #64748b;
+  --color-border: #e2e8f0;
+  --font-sans: "Noto Sans SC", "DM Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  background: var(--color-map-bg);
+  color: #1e293b;
+}
+
+.mapboxgl-ctrl-logo,
+.mapboxgl-ctrl-attrib {
+  opacity: 0.5;
+}
+
+/* 图层控制器 — Mapbox IControl 挂载 */
+.mapboxgl-ctrl.layer-control {
+  margin: 0 0 10px 10px;
+  background: transparent;
+  box-shadow: none;
+}
+
+@media (max-width: 639px) {
+  .mapboxgl-ctrl.layer-control {
+    margin: 0 10px 72px auto;
+  }
+
+  .mapboxgl-ctrl-bottom-left .mapboxgl-ctrl.layer-control {
+    float: right;
+  }
+}
+
+.layer-control-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: calc(100vw - 1rem);
+  padding: 8px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--color-card) 95%, transparent);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+@media (min-width: 640px) {
+  .layer-control-panel {
+    max-width: none;
+  }
+}
+
+.layer-control-title {
+  padding: 0 8px 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-muted);
+}
+
+.layer-control-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+@media (min-width: 640px) {
+  .layer-control-buttons {
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+}
+
+.layer-control-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+  color: #334155;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.layer-control-btn:hover {
+  background: var(--color-card-dark);
+}
+
+.layer-control-btn--active {
+  color: #fff;
+  background: var(--color-accent);
+}
+
+.layer-control-btn--active:hover {
+  background: var(--color-accent-hover);
+}
+
+.layer-legend {
+  margin-top: 4px;
+  padding: 8px 8px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.layer-legend-desc {
+  margin-bottom: 4px;
+  font-size: 10px;
+  color: var(--color-muted);
+}
+
+.layer-legend-bar {
+  height: 6px;
+  width: 100%;
+  border-radius: 9999px;
+}
+
+.layer-legend--population {
+  background: linear-gradient(to right, rgb(45 212 191 / 0.8), var(--color-teal));
+}
+
+.layer-legend--economy {
+  background: linear-gradient(to right, rgb(251 191 36 / 0.8), #d97706);
+}
+
+.layer-legend--tourism {
+  background: linear-gradient(to right, rgb(255 107 74 / 0.8), #ef4444);
+}
+
+.layer-legend-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2px;
+  font-size: 9px;
+  color: var(--color-muted);
+}
+
+@supports (padding: env(safe-area-inset-top)) {
+  .safe-top {
+    padding-top: max(0.5rem, env(safe-area-inset-top));
+  }
+
+  .safe-bottom {
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  }
+
+  .safe-x {
+    padding-left: max(0.5rem, env(safe-area-inset-left));
+    padding-right: max(0.5rem, env(safe-area-inset-right));
+  }
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

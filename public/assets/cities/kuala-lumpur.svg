@@ -1,0 +1,18 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' role='img'>
+  <defs>
+    <linearGradient id='sky' x1='0' y1='0' x2='0' y2='1'>
+      <stop offset='0%' stop-color='#1a1f2e'/>
+      <stop offset='100%' stop-color='#22c55e33'/>
+    </linearGradient>
+  </defs>
+  <rect width='400' height='200' fill='url(#sky)'/>
+  <rect x='20' y='120' width='35' height='70' fill='#22c55e88'/>
+  <rect x='65' y='90' width='45' height='100' fill='#22c55ebb'/>
+  <rect x='120' y='70' width='55' height='120' fill='#22c55e'/>
+  <rect x='185' y='100' width='40' height='90' fill='#22c55e99'/>
+  <rect x='235' y='55' width='50' height='135' fill='#22c55ecc'/>
+  <rect x='295' y='85' width='42' height='105' fill='#22c55eaa'/>
+  <rect x='345' y='110' width='35' height='80' fill='#22c55e77'/>
+  <rect x='0' y='190' width='400' height='10' fill='#22c55e44'/>
+  <text x='200' y='28' text-anchor='middle' fill='#f8f9fb' font-family='system-ui,sans-serif' font-size='16' font-weight='600'>Kuala Lumpur</text>
+</svg>
